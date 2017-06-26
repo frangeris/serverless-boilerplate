@@ -7,3 +7,4 @@ jspm_packages
 
 # project
 .env.yml
+functions/dummy/

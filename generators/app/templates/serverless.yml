@@ -1,15 +1,12 @@
 service: <%= name %>
-
 provider:
   name: aws
   region: <%= region %>
   runtime: nodejs6.10
   stage: develop
-  environment: ${file(.env.yml):${self:custom.stage}}
-
+  environment: '${file(.env.yml):${self:custom.stage}}'
 custom:
   stage: "${opt:stage, self:provider.stage}"
-
 package:
   include:
     - node_modules/**
@@ -17,7 +14,6 @@ package:
     - .env.yml
     - .env.yml.example
     - templates/**
-
 functions:
   get-dummy:
     name: get-dummy
@@ -28,31 +24,27 @@ functions:
           method: GET
           path: dummy
           cors: true
-
   post-dummy:
     name: post-dummy
     description: Post dummy method description
     handler: functions/dummy/post.handler
     events:
       - http: POST dummy
-
   put-dummy:
     name: put-dummy
     description: Put dummy method description
     handler: functions/dummy/put.handler
     events:
       - http: PUT dummy
-
   delete-dummy:
     name: delete-dummy
     description: Delete dummy method description
     handler: functions/dummy/delete.handler
     events:
       - http: DELETE dummy
-
 resources:
   Resources:
     ApiGatewayRestApi:
-      Type: AWS::ApiGateway::RestApi
+      Type: 'AWS::ApiGateway::RestApi'
       Properties:
-        Name: Serverless RESTful API (${self:custom.stage})
+        Name: 'Serverless RESTful API (${self:custom.stage})'
