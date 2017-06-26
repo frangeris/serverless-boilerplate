@@ -4,19 +4,27 @@ const _ = require('lodash');
 const yaml = require('js-yaml');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
+const path = require('path');
 
 module.exports = class extends Generator {
   initializing() {
+    this.currentDir = path.basename(process.cwd());
     this.props = {};
     try {
       fs.statSync(this.destinationPath('serverless.yml'));
     } catch (ex) {
-      this.log.error('serverless.yml NOT FOUND, for overwrite go inside a project.');
+      this.log.error('serverless.yml N  OT FOUND, for overwrite go inside a project.');
     }
   }
 
   prompting() {
     return this.prompt([
+      {
+        type: 'confirm',
+        name: 'nested',
+        message: 'Is it a nested resource?',
+        default: false
+      },
       {
         type: 'list',
         name: 'method',
@@ -37,7 +45,8 @@ module.exports = class extends Generator {
         name: 'description',
         message: 'Your function description',
         default: answers => {
-          return `${_.capitalize(answers.method)} ${answers.name} method`;
+          let name = (answers.nested) ? `${this.currentDir} ${answers.name}` : answers.name;
+          return `${_.capitalize(answers.method)} ${name}`;
         }
       }
     ]).then(answers => {
@@ -46,10 +55,19 @@ module.exports = class extends Generator {
   }
 
   writing() {
-    // Append conf to .yml
-    let name = _.toLower(`${this.props.method}-${this.props.name}`);
+    let name = `${this.props.method}-`;
     let method = _.toLower(this.props.method);
-    let folder = `functions/${this.props.name}`;
+    let folder = 'functions/';
+
+    // Append parent name, folder name nested
+    if (this.props.nested) {
+      name += `${this.currentDir}-`;
+      folder = '';
+    }
+    name += `${this.props.name}`;
+    name = _.toLower(name);
+    folder += this.props.name;
+
     try {
       // Build the configuration file
       let serverless = yaml.safeLoad(fs.readFileSync(this.destinationPath('serverless.yml'), 'utf8'));
