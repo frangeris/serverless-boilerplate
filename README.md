@@ -33,8 +33,39 @@ yo serverless-boilerplate
 To generate new functions inside a project (recomended for overwrite `serverless.yml`):
 
 ```bash
-yo serverless-boilerplate:function
+$ yo serverless-boilerplate:function
+? Function name users
+? Which HTTP method? GET
+? Is it a nested resource? No
+? Your function description Get users
+   create functions/users/get.js
+✔ Function "get-users" generated successfully
 ```
+
+Functions also can be nested resources, running the same above inside the functions folder will create another folder in, eg:
+
+```bash
+$ pwd
+/home/dev/code/code-api/functions/users
+
+dev @ ~/code/code-api/functions/users
+$ yo serverless-boilerplate:function
+? Function name orgs
+? Which HTTP method? GET
+? Is it a nested resource? Yes
+? Your function description Get users orgs
+   create orgs/get-users.js
+✔ Function "get-users-orgs" generated successfully
+
+dev @ ~/code/code-api/functions/users
+$ ls
+total 16K
+drwxr-xr-x 3 dev 4,0K jun 27 10:41 .
+drwxr-xr-x 4 dev 4,0K jun 27 10:36 ..
+-rw-r--r-- 1 dev  266 jun 27 10:36 get.js
+drwxr-xr-x 2 dev 4,0K jun 27 10:41 orgs
+```
+*[WIP]* Currently the `function` subgenerator don't save the path with parameters, so *parameters* must be added manually.
 
 ## Now, let's Rock n' roll
 The project structure presented in this boilerplate is Microservices Pattern, where functionality is grouped primarily by function rather than resources. Each job or functionality is isolated within a separate Lambda function.
