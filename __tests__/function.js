@@ -10,8 +10,9 @@ describe('serverless-boilerplate:function', () => {
         tmpir: false
       })
       .withPrompts({
-        method: 'GET',
-        name: 'users'
+        name: 'users',
+        method: 'get',
+        nested: false
       })
       .withGenerators([
         [helpers.createDummyGenerator(), '../generators/app']
