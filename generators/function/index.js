@@ -5,40 +5,53 @@ const yaml = require('js-yaml');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const path = require('path');
+const glob = require('glob');
 
 module.exports = class extends Generator {
   initializing() {
     this.currentDir = path.basename(process.cwd());
     this.props = {};
-    try {
-      fs.statSync(this.destinationPath('serverless.yml'));
-    } catch (ex) {
-      this.log.error('serverless.yml N  OT FOUND, for overwrite go inside a project.');
-    }
+
+    // Find conf file
+    let locate = () => {
+      let files = glob.sync('{./,../,../../,../../../}/serverless.yml', {
+        nodir: true,
+        realpath: true
+      });
+
+      if (!files) {
+        this.log.error('serverless.yml NOT FOUND, for overwrite go inside a project.');
+      }
+
+      return files ? files[0] : './';
+    };
+
+    this.configFile = locate();
   }
 
   prompting() {
     return this.prompt([
       {
-        type: 'confirm',
-        name: 'nested',
-        message: 'Is it a nested resource?',
-        default: false
+        type: 'input',
+        name: 'name',
+        message: 'Function name',
+        filter: _.kebabCase.toLower,
+        validate: value => {
+          return !_.isEmpty(value);
+        }
       },
       {
         type: 'list',
         name: 'method',
         message: 'Which HTTP method?',
-        choices: ['GET', 'POST', 'PUT', 'DELETE']
+        choices: ['GET', 'POST', 'PUT', 'DELETE'],
+        filter: _.toLower
       },
       {
-        type: 'input',
-        name: 'name',
-        message: 'Resource name',
-        filter: _.kebabCase,
-        validate: value => {
-          return !_.isEmpty(value);
-        }
+        type: 'confirm',
+        name: 'nested',
+        message: 'Is it a nested resource?',
+        default: false
       },
       {
         type: 'input',
@@ -55,30 +68,34 @@ module.exports = class extends Generator {
   }
 
   writing() {
-    let name = `${this.props.method}-`;
-    let method = _.toLower(this.props.method);
-    let folder = 'functions/';
+    let func = `${this.props.method}`;
+    let dest = 'functions/';
+    let handler = '';
 
     // Append parent name, folder name nested
     if (this.props.nested) {
-      name += `${this.currentDir}-`;
-      folder = '';
+      func += `-${this.currentDir}`;
+      dest = '';
     }
-    name += `${this.props.name}`;
-    name = _.toLower(name);
-    folder += this.props.name;
+    let name = _.toLower(`${func}-${this.props.name}`);
+    dest += this.props.name;
 
     try {
       // Build the configuration file
-      let serverless = yaml.safeLoad(fs.readFileSync(this.destinationPath('serverless.yml'), 'utf8'));
+      if (this.props.nested) {
+        handler = 'functions/';
+        handler += `${this.currentDir}/`;
+      }
+      handler += `${dest}/${this.props.method}.handler`;
+      let serverless = yaml.safeLoad(fs.readFileSync(this.configFile, 'utf8'));
       serverless.functions[name] = {
         name,
         description: this.props.description,
-        handler: `${folder}/${method}.handler`,
+        handler,
         events: [
           {
             http: {
-              method: _.toUpper(method),
+              method: _.toUpper(this.props.method),
               path: this.props.name,
               integration: 'lambda',
               request: {
@@ -91,7 +108,7 @@ module.exports = class extends Generator {
       };
 
       fs.writeFile(
-        this.destinationPath('serverless.yml'),
+        this.configFile,
         yaml.safeDump(serverless),
         () => this.log.ok(`Function "${name}" generated successfully`)
       );
@@ -100,11 +117,14 @@ module.exports = class extends Generator {
     }
 
     // Create function handler
-    mkdirp(folder);
+    mkdirp(dest);
     this.fs.copyTpl(
       this.templatePath('handler.js'),
-      this.destinationPath(`${folder}/${method}.js`),
-      {name, method}
+      this.destinationPath(`${dest}/${this.props.method}.js`),
+      {
+        name,
+        method: this.props.method
+      }
     );
   }
 };
