@@ -1,10 +1,9 @@
 const jwt = require('jsonwebtoken')
-const AuthPolicy = require('./authpolicy')
+const AuthPolicy = require('../../helpers/authpolicy')
 
 exports.handler = function (event, context, callback) {
-  let pems = require('../../jwks-pem.json')
+  let pems = require('../../tokens/firebase.json')
   let token = event.authorizationToken
-  let iss = process.env.AWS_ISS
 
   // fail if the token is not jwt
   let decodedJwt = jwt.decode(token, { complete: true })
@@ -12,13 +11,8 @@ exports.handler = function (event, context, callback) {
     return callback('Unauthorized')
   }
 
-  // fail if token is not from your UserPool
-  if (decodedJwt.payload.iss != iss) {
-    return callback('Unauthorized')
-  }
-
-  // reject the jwt if it's not an 'Access Token'
-  if (decodedJwt.payload.token_use != 'access') {
+  // validate algorithm
+  if (decodedJwt.header.alg != 'RS256') {
     return callback('Unauthorized')
   }
 
@@ -29,8 +23,18 @@ exports.handler = function (event, context, callback) {
     return callback('Unauthorized')
   }
 
+  // validate audience
+  if (decodedJwt.payload.aud != process.env.FIREBASE_PROJECT_ID) {
+    return callback('Unauthorized')
+  }
+
+  // fail if token is not from your UserPool
+  if (decodedJwt.payload.iss != process.env.FIREBASE_ISS) {
+    return callback('Unauthorized')
+  }
+
   // verify the signature of the JWT token to ensure it's really coming from your User Pool
-  jwt.verify(token, pem, { issuer: iss }, function (err, payload) {
+  jwt.verify(token, pem, { issuer: process.env.FIREBASE_ISS }, function (err, payload) {
     if (err) {
       return callback('Unauthorized');
     } else {

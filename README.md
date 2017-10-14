@@ -19,11 +19,11 @@
 [prs-badge]: https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat
 [prs]: http://makeapullrequest.com
 
-This boilerplate want's to simplify the process of RESTful apis creations under serverless arquitecture in AWS (serverless +v1.x), create a good codebase with scalability while the project grow up could require a lot of efford, time and dedication for know how the framework works, often this process of learning tends to be while we're building the product and this require agility and fast learning, customizing the code could be annoying a take more time than expected, that's the reason of this skeleton. 
+Build scalables RESTful apis creations under serverless arquitecture in AWS (serverless +v1.x), create a good codebase with scalability while the project grow up could require a lot of efford, time and dedication for know how the framework works, often this process of learning tends to be while we're building the product and this require agility and fast learning, customizing the code could be annoying a take more time than expected, that's the reason of this skeleton. 
 
 ## Installation
 
-First, install [Yeoman](http://yeoman.io) and `generator-serverless-boilerplate` using [npm](https://www.npmjs.com/) (we assume you have pre-installed [node.js](https://nodejs.org/)).
+First, install [Yeoman](http://yeoman.io) and `generator-serverless-boilerplate` using [npm](https://www.npmjs.com/) (we assume you have pre-installed [node.js](https://nodejs.org/) and [serverless framework](https://github.com/serverless/serverless)).
 
 ```bash
 npm install -g yo
@@ -40,12 +40,12 @@ To generate new functions inside a project (recomended for overwrite `serverless
 
 ```bash
 $ yo serverless-boilerplate:function
-? Function name users
+? Resource name users
+? What kind of design? Normal "/users"
 ? Which HTTP method? GET
-? Is it a nested resource? No
 ? Your function description Get users
    create functions/users/get.js
-✔ Function "get-users" generated successfully
+✔ GET /users for "get-users" function generated successfully
 ```
 
 Functions also can be nested resources, running the same above inside the functions folder will create another folder in, eg:
@@ -56,12 +56,12 @@ $ pwd
 
 dev @ ~/code/code-api/functions/users
 $ yo serverless-boilerplate:function
-? Function name orgs
+? Resource name orgs
+? What kind of design? Normal "/orgs"
 ? Which HTTP method? GET
-? Is it a nested resource? Yes
-? Your function description Get users orgs
-   create orgs/get-users.js
-✔ Function "get-users-orgs" generated successfully
+? Your function description Get orgs
+   create functions/orgs/get.js
+✔ GET /orgs for "get-orgs" function generated successfully
 
 dev @ ~/code/code-api/functions/users
 $ ls
@@ -71,7 +71,7 @@ drwxr-xr-x 4 dev 4,0K jun 27 10:36 ..
 -rw-r--r-- 1 dev  266 jun 27 10:36 get.js
 drwxr-xr-x 2 dev 4,0K jun 27 10:41 orgs
 ```
-**[WIP]** Currently the `function` subgenerator don't save the path with parameters, so *parameters* must be added manually.
+> The `function` subgenerator will save the path with parameters, to change parameters name update the file `serverless.yml` manually.
 
 ## How apply updates?
 Thank's to [Yeoman](http://yeoman.io) :raised_hands: we have a [conflict handler](http://yeoman.io/generator/Conflicter.html) out-of-the-box.
@@ -106,20 +106,24 @@ The basic project contains the following directory structure:
 │   ├── request.vtl
 |   └── response.vtl
 ├── helpers
+│   ├── authpolicy.js
 │   ├── index.js
-│   ├── jwks-to-pem.js
 │   └── response.js
 ├── functions
-│   └── authorizer-jwt
-│       ├── authpolicy.js
+│   └── aws-authorizer-jwt          # AWS authorizer for jwt tokens
 │       └── handler.js
-│   └── example
+│   └── firebase-authorizer-jwt     # Firebase authorizer for jwt tokens
+│       └── handler.js
+│   └── example                     # Basic structure of a resource
 │       ├── event.json
 │       ├── get.js
 │       ├── post.js
 │       ├── put.js
 │       └── delete.js
 └── tests
+├── tokens
+│   ├── aws.json                    # AWS pem file
+│   └── firebase.json               # Firebase tokens
 ```
 
 ## Terms and concepts
@@ -127,20 +131,20 @@ The basic project contains the following directory structure:
 #### The service (Api Gateway)
 Due to the current limitations where every service will create an individual API in API Gateway (WIP), we'll be working with a unique service with all the functions (resources) that will be exposed.
 
-#### serverless.yml
+#### File serverless.yml
 The default provider is `aws`, see [documentation](https://serverless.com/framework/docs/providers/aws/guide/serverless.yml/) for complete list of options available.
 
-#### package.js (required packages)
+#### File package.js (required packages)
 - [yortus/asyncawait](https://github.com/yortus/asyncawait) for avoid [callback hell](http://callbackhell.com/) in validation helper.
 - [krachot/options-resolver](https://github.com/krachot/options-resolver) as port of Symfony component [OptionsResolver](http://symfony.com/doc/current/components/options_resolver.html)
 - [HyperBrain/serverless-aws-alias](https://github.com/HyperBrain/serverless-aws-alias) enables use of AWS aliases on Lambda functions.
 - [Brightspace/node-jwk-to-pem](https://github.com/Brightspace/node-jwk-to-pem) used to convert jwks to pem file.
 - [mzabriskie/axios](https://github.com/mzabriskie/axios) Awesome HTTP client for make request.
 
-#### Stages
+#### Environment stages
 The default stage is "develop", for create a new one, use the package `serverless-aws-alias` and change the value in `serverless.yml` or pass it as `--option` when deployment.
 
-#### .env.yml.example
+#### File .env.yml.example
 Environment variables used by your function, variables are grouped by stage, so this meas variables will only be available depending of the stage where you defined them, variables are loaded automatically, there is not need to "require a file early as possible", so copy the file **IF NOT EXISTS** `.env.yml.example` to `.env.yml` and write the real values, depending the value for `stage` in `serverless.yml` file, values will be loaded, eg: 
 
 Create your final env vars file
@@ -169,12 +173,12 @@ module.exports.handler = (event, context, callback) => {
 
 `.env.yml.example` is added to VCS for keep reference of the variables, not values. `.env.yml` is not uploaded either aws when create the package or vcs.
 
-#### templates
+#### Apache Velocity templates
 Templates are optionals, used when the integration is `lambda`, this method is more complicated and involves a lot more configuration of the http event syntax, [more info](https://serverless.com/framework/docs/providers/aws/events/apigateway/#lambda-integration).
 
 The templates are defined as plain text, however you can also reference an external file with the help of the `${file(templates/response.vtl)}` syntax, use [Apache Velocity](http://velocity.apache.org/) syntax for custom.  
 
-#### helpers
+#### Some helpers...
 Helpers are just custom reusable functions for facilitate some repetitive tasks like validations, custom response, etc.
 
 Here the current availables:
@@ -203,53 +207,16 @@ develop:
           path: '/users/{sub}/orgs'
           method: GET
           cors: true
-          authorizer: authorizer-jwt
+          authorizer: aws-authorizer-jwt
 ```
 And that's it, API Gateway will run the [authorizer before the lambda execution](https://aws.amazon.com/blogs/compute/introducing-custom-authorizers-in-amazon-api-gateway/) automatically :dancer:
 
 - `validate()` this method return a `Promise` and throw an `Error` if the validation fails.
-- `response()` **@deprecated**, use `'/helpers/response'` instead, is a shorcut for the callback received in the lambda handler, but this add the json body for integration response in API Gateway at the same time, eg:
+- `response()` is a shorcut for the callback received in the lambda handler, but this add the json body for integration response in API Gateway at the same time implementing [JSON API](http://jsonapi.org) standard, eg:
 
+Samples of the `response` **using lambda-proxy integration**, [more info of integrations](https://serverless.com/framework/docs/providers/aws/events/apigateway).
 ```javascript
-const { response, resolver, validate } = require('path/to/helpers')
-
-// success response
-response() // 200 - {"message": "Request processed successfully"}
-response('this works like a charm!') // 200 - {"message": "this works like a charm!"}
-response('Oh, you user has been created', 201) // 201 - {"message": "Oh, you user has been created"}
-
-// and the erros
-response(new Error('something fails')) // 400 - {"message": "something fails"}
-response(new Error('something fails with style'), 500) // 500 - {"message": "something fails with style"}
-
-```
-
-Also `response()` could receive a `body` and `headers` objects for more customization of the response.
-
-```javascript
-
-let headers = {
-    "x-custom-header" : "My Header Value"
-}
-
-let body = {
-    name: 'Jhon Due',
-    age: 25,
-    company: 'The Company',
-    location: 'Somewhere'
-}
-
-response('user logged', 200, body, headers)
-
-```
-
-There's a new version final version of `response()`, the main differences between using `response()` from `require('helpers')` and `require('helpers/response')` is that the new one implement [JSON API](http://jsonapi.org) standard.
-
-> Using response from `require('helpers')` will be deprecated in the next major release.
-
-Samples of the new `response` **using lambda-proxy integration**, [more info of integrations](https://serverless.com/framework/docs/providers/aws/events/apigateway).
-```javascript
-const response = require('path/to/helpers/response')
+const { response } = require('path/to/helpers')
 response(201)
 // {"statusCode": 201, "body": "{\"data\":null}","headers": {}}
 

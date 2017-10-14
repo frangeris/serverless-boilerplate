@@ -19,39 +19,14 @@ package:
     - .eslintrc.js
 functions:
   authorizer-jwt:
-    handler: functions/authorizer-jwt/handler.handler
-    description: Authorizer for JWT integration
-  get-example:
-    name: get-example
-    description: Get example method description
-    handler: functions/example/get.handler
-    events:
-      - http:
-          method: GET
-          path: example
-          cors: true
-          authorizer: authorizer-jwt
-  post-example:
-    name: post-example
-    description: Post example method description
-    handler: functions/example/post.handler
-    events:
-      - http: POST example
-  put-example:
-    name: put-example
-    description: Put example method description
-    handler: functions/example/put.handler
-    events:
-      - http: PUT example
-  delete-example:
-    name: delete-example
-    description: Delete example method description
-    handler: functions/example/delete.handler
-    events:
-      - http: DELETE example
+    handler: functions/aws-authorizer-jwt/handler.handler
+    description: Authorizer for JWT integration using AWS
+  firebase-authorizer-jwt:
+    handler: functions/firebase-authorizer-jwt/handler.handler
+    description: Authorizer for JWT integration using Firebase
 resources:
   Resources:
     ApiGatewayRestApi:
       Type: 'AWS::ApiGateway::RestApi'
       Properties:
-        Name: 'Serverless RESTful API (${self:custom.stage})'
+        Name: '<%= name %> serverless api (${self:custom.stage})'
