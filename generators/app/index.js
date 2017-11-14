@@ -38,7 +38,7 @@ module.exports = class extends Generator {
           if (this.serverless) {
             return this.serverless.provider.region;
           }
-          return 'us-west-1';
+          return 'us-east-2';
         },
         message: 'AWS API Gateway region'
       }
