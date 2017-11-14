@@ -1,7 +1,7 @@
 {
-  "name": "generator-serverless-boilerplate",
+  "name": "generator-pong",
   "version": "0.3.11",
-  "description": "Serverless boilerplate for RESTful api creation",
+  "description": "Pong for RESTful APIs (microservices pattern) using serverless ping-pong.",
   "license": "MIT",
   "author": {
     "name": "Frangeris Peguero",
@@ -12,7 +12,10 @@
   ],
   "main": "generators/index.js",
   "keywords": [
-    "yeoman-generator"
+    "yeoman-generator",
+    "ping",
+    "pong",
+    "api"
   ],
   "devDependencies": {
     "asyncawait": "^1.0.6",
@@ -34,11 +37,6 @@
     "yeoman-generator": "^1.0.0",
     "yosay": "^2.0.0"
   },
-  "jest": {
-    "transform": {
-      "^.+\\.jsx?$": "babel-jest"
-    }
-  },
   "scripts": {
     "pretest": "eslint . --fix",
     "test": "jest"
@@ -50,5 +48,5 @@
       "node": true
     }
   },
-  "repository": "frangeris/serverless-boilerplate"
+  "repository": "https://github.com/frangeris/pong"
 }
