@@ -1,45 +1,52 @@
 <div align="center">
-    <img src="https://cdn.rawgit.com/frangeris/serverless-boilerplate/master/boilerplate-logo.svg"
+    <img src="https://cdn.rawgit.com/frangeris/pong/master/boilerplate-logo.svg"
       alt="Serverless RESTful Boilerplate" width="500" />
 </div>
 
-# Serverless RESTful Boilerplate (microservices pattern)
+# Pong for RESTful APIs (serverless microservices pattern)
 
 [![serverless](http://public.serverless.com/badges/v3.svg)](http://www.serverless.com)
-[![Build Status](https://travis-ci.org/frangeris/serverless-boilerplate.svg?branch=master)](https://travis-ci.org/frangeris/serverless-boilerplate)
+[![Build Status](https://travis-ci.org/frangeris/pong.svg?branch=master)](https://travis-ci.org/frangeris/pong)
 [![Dependency Status][daviddm-image]][daviddm-url]
-[![node](https://img.shields.io/badge/node-6.10-brightgreen.svg)](https://packagist.org/packages/frangeris/serverless-boilerplate)
+[![node](https://img.shields.io/badge/node-6.10-brightgreen.svg)](https://packagist.org/packages/frangeris/pong)
 [![Semantic Releases][semantic-release-badge]][semantic-release]
 [![PRs Welcome][prs-badge]][prs]
 
-[daviddm-image]: https://david-dm.org/frangeris/serverless-boilerplate.svg?theme=shields.io
-[daviddm-url]: https://david-dm.org/frangeris/serverless-boilerplate
-[semantic-release]: https://github.com/frangeris/serverless-boilerplate/releases
+[daviddm-image]: https://david-dm.org/frangeris/pong.svg?theme=shields.io
+[daviddm-url]: https://david-dm.org/frangeris/pong
+[semantic-release]: https://github.com/frangeris/pong/releases
 [semantic-release-badge]: https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg?style=flat
 [prs-badge]: https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat
 [prs]: http://makeapullrequest.com
 
 Build scalables RESTful apis creations under serverless arquitecture in AWS (serverless +v1.x), create a good codebase with scalability while the project grow up could require a lot of efford, time and dedication for know how the framework works, often this process of learning tends to be while we're building the product and this require agility and fast learning, customizing the code could be annoying a take more time than expected, that's the reason of this skeleton. 
 
+## Why Pong?
+Have you play ping-pong? is a sport in which two players ([frontend and backend](https://en.wikipedia.org/wiki/Front_and_back_ends)) hit a lightweight ball ([HATEOAS](https://en.wikipedia.org/wiki/HATEOAS)) back and forth across a table ([Restful](https://en.wikipedia.org/wiki/Representational_state_transfer)) using small bats ([Vuejs](https://vuejs.org/) and [Serverless Framework](https://github.com/serverless/serverless)). 
+
+## Requirements
+- [Serverless framework v1+](https://github.com/serverless/serverless)
+- [node.js](https://nodejs.org/)
+
 ## Installation
 
-First, install [Yeoman](http://yeoman.io) and `generator-serverless-boilerplate` using [npm](https://www.npmjs.com/) (we assume you have pre-installed [node.js](https://nodejs.org/) and [serverless framework](https://github.com/serverless/serverless)).
+First, install [Yeoman](http://yeoman.io) and `generator-pong` using [npm](https://www.npmjs.com/) (we assume you have pre-installed [node.js](https://nodejs.org/) and [serverless framework](https://github.com/serverless/serverless)).
 
 ```bash
 npm install -g yo
-npm install -g generator-serverless-boilerplate
+npm install -g generator-pong
 ```
 
 Then generate your new project:
 
 ```bash
-yo serverless-boilerplate
+yo pong
 ```
 
-To generate new functions inside a project (recomended for overwrite `serverless.yml`):
+Generate new functions inside a project using CLI (recomended for overwrite `serverless.yml`):
 
 ```bash
-$ yo serverless-boilerplate:function
+$ yo pong:func
 ? Resource name users
 ? What kind of design? Normal "/users"
 ? Which HTTP method? GET
@@ -48,14 +55,15 @@ $ yo serverless-boilerplate:function
 ✔ GET /users for "get-users" function generated successfully
 ```
 
-Functions also can be nested resources, running the same above inside the functions folder will create another folder in, eg:
+Functions also can be nested resources, running the same above inside the functions folder will create another folder in, eg: 
+create another resource inside `users` will end with `/users/{id}/<new resource>`
 
 ```bash
 $ pwd
-/home/dev/code/code-api/functions/users
+/home/code/myproject/functions/users
 
-dev @ ~/code/code-api/functions/users
-$ yo serverless-boilerplate:function
+dev @ ~/code/myproject/functions/users
+$ yo pong:func
 ? Resource name orgs
 ? What kind of design? Normal "/orgs"
 ? Which HTTP method? GET
@@ -63,27 +71,27 @@ $ yo serverless-boilerplate:function
    create functions/orgs/get.js
 ✔ GET /orgs for "get-orgs" function generated successfully
 
-dev @ ~/code/code-api/functions/users
+dev @ ~/code/myproject/functions/users
 $ ls
 total 16K
 drwxr-xr-x 3 dev 4,0K jun 27 10:41 .
 drwxr-xr-x 4 dev 4,0K jun 27 10:36 ..
 -rw-r--r-- 1 dev  266 jun 27 10:36 get.js
-drwxr-xr-x 2 dev 4,0K jun 27 10:41 orgs
+drwxr-xr-x 2 dev 4,0K jun 27 10:41 orgs/
 ```
-> The `function` subgenerator will save the path with parameters, to change parameters name update the file `serverless.yml` manually.
+> The `func` subgenerator will save the path with parameters (if have), to change parameters name update the file `serverless.yml` manually.
 
-## How apply updates?
+## New updates from here?
 Thank's to [Yeoman](http://yeoman.io) :raised_hands: we have a [conflict handler](http://yeoman.io/generator/Conflicter.html) out-of-the-box.
 
 > The Conflicter is a module that can be used to detect conflict between files. Each Generator file system helpers pass files through this module to make sure they don't break a user file.
 
-To update a project with the latest features in the boilerplate just run `yo serverless-boilerplate` inside the project, the generator must detect and automatically inform that an update will be made.
+To update a project with the latest features in the boilerplate just run `yo pong:update` inside the project, the generator must detect and automatically inform that an update will be made, the generator will only update global files, if you have modifed "core" files be careful while overwriting in updates.
 
 ```bash
 dev @ ~/code/my-api
-$ yo serverless-boilerplate
-Project detected, updating the core instead...
+$ yo pong:update
+Project detected, updating the boilerplate files instead...
 ? Your project name (my-api)
 ```
 *Note:* it will ask for some fields in case you want to update basic parameters in `serverless.yml`, in case nothing change, hit enter to use existing previous values.
@@ -114,38 +122,44 @@ The basic project contains the following directory structure:
 │       └── handler.js
 │   └── firebase-authorizer-jwt     # Firebase authorizer for jwt tokens
 │       └── handler.js
-│   └── example                     # Basic structure of a resource
-│       ├── event.json
+│   └── myresource                  # Basic structure of a resource
+│       ├── id.js
 │       ├── get.js
 │       ├── post.js
 │       ├── put.js
 │       └── delete.js
 └── tests
 ├── tokens
-│   ├── aws.json                    # AWS pem file
+│   ├── aws.json                    # AWS jwks file
 │   └── firebase.json               # Firebase tokens
 ```
 
-## Terms and concepts
-
-#### The service (Api Gateway)
+## Concepts
+#### What is a service? (Api Gateway)
 Due to the current limitations where every service will create an individual API in API Gateway (WIP), we'll be working with a unique service with all the functions (resources) that will be exposed.
 
-#### File serverless.yml
+#### How to use multiple environment stages (develop, prod, staging)?
+The default stage is "develop", for create a new one, use the package `serverless-aws-alias` and change the value in `serverless.yml` or pass it as `--option` when deployment.
+
+#### Custom with Apache Velocity Templates
+Templates are optionals, used **ONLY** when the integration is `lambda`, this method is more complicated and involves a lot more configuration of the http event syntax, [more info](https://serverless.com/framework/docs/providers/aws/events/apigateway/#lambda-integration).
+
+The templates are defined as plain text, however you can also reference an external file with the help of the `${file(templates/response.vtl)}` syntax, use [Apache Velocity](http://velocity.apache.org/) syntax for custom. 
+
+## Configuration files
+
+#### serverless.yml
 The default provider is `aws`, see [documentation](https://serverless.com/framework/docs/providers/aws/guide/serverless.yml/) for complete list of options available.
 
-#### File package.js (required packages)
+#### package.js (core required packages)
 - [yortus/asyncawait](https://github.com/yortus/asyncawait) for avoid [callback hell](http://callbackhell.com/) in validation helper.
 - [krachot/options-resolver](https://github.com/krachot/options-resolver) as port of Symfony component [OptionsResolver](http://symfony.com/doc/current/components/options_resolver.html)
 - [HyperBrain/serverless-aws-alias](https://github.com/HyperBrain/serverless-aws-alias) enables use of AWS aliases on Lambda functions.
 - [Brightspace/node-jwk-to-pem](https://github.com/Brightspace/node-jwk-to-pem) used to convert jwks to pem file.
 - [mzabriskie/axios](https://github.com/mzabriskie/axios) Awesome HTTP client for make request.
 
-#### Environment stages
-The default stage is "develop", for create a new one, use the package `serverless-aws-alias` and change the value in `serverless.yml` or pass it as `--option` when deployment.
-
-#### File .env.yml.example
-Environment variables used by your function, variables are grouped by stage, so this meas variables will only be available depending of the stage where you defined them, variables are loaded automatically, there is not need to "require a file early as possible", so copy the file **IF NOT EXISTS** `.env.yml.example` to `.env.yml` and write the real values, depending the value for `stage` in `serverless.yml` file, values will be loaded, eg: 
+#### .env.yml.example
+Environment variables used by your function, variables are grouped by stage, so this meas variables will only be available depending of the stage where you defined them, variables are loaded automatically, there is not need to "require a file early as possible", so copy the file **IN CASE IF NOT EXISTS (CREATED AUTOMATICALLY BY BOILERPLATE)** `.env.yml.example` to `.env.yml` and write the real values, depending the value for `stage` in `serverless.yml` file, values will be loaded, eg: 
 
 Create your final env vars file
 
@@ -171,32 +185,26 @@ module.exports.handler = (event, context, callback) => {
 }
 ```
 
-`.env.yml.example` is added to VCS for keep reference of the variables, not values. `.env.yml` is not uploaded either aws when create the package or vcs.
-
-#### Apache Velocity templates
-Templates are optionals, used when the integration is `lambda`, this method is more complicated and involves a lot more configuration of the http event syntax, [more info](https://serverless.com/framework/docs/providers/aws/events/apigateway/#lambda-integration).
-
-The templates are defined as plain text, however you can also reference an external file with the help of the `${file(templates/response.vtl)}` syntax, use [Apache Velocity](http://velocity.apache.org/) syntax for custom.  
+> `.env.yml.example` is added to VCS for keep reference of the variables, not values (good practice). `.env.yml` is not uploaded either aws when create the package or vcs.
 
 #### Some helpers...
 Helpers are just custom reusable functions for facilitate some repetitive tasks like validations, custom response, etc.
 
 Here the current availables:
-- *jwks-to-pem.js* file to convert jwks json to pem file used in `authorizer-jwt` function, eg: inside a project:
+- `jwks-to-pem.js` if a helper file to convert AWS jwks json to pem file used in `aws-authorizer-jwt` function, eg: in root inside a project:
 ```bash
-$ cd helpers
-$ node jwks-to-pem.js <url to jwks.json>
+$ node ./helpers/jwks-to-pem.js <url to jwks.json>
 ```
 > `jwks.json` is usually located in `https://cognito-idp.{region}.amazonaws.com/{userPoolId}/.well-known/jwks.json`.
 
-This will generate a json file with the pem keys in it, `authorizer-jwt` use this file to authenticate using [JSON Web Tokens](https://jwt.io/) with [cognito integration](https://aws.amazon.com/blogs/mobile/integrating-amazon-cognito-user-pools-with-api-gateway/) for secure your resources, [more info](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html).
+This will generate a json file with the pem keys in it, `aws-authorizer-jwt` use this file to authenticate using [JSON Web Tokens](https://jwt.io/) with [cognito integration](https://aws.amazon.com/blogs/mobile/integrating-amazon-cognito-user-pools-with-api-gateway/) for secure your API resources, [more info](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html).
 
-The authorizer needs to khow the `iss` of the [token](https://tools.ietf.org/html/rfc7519#section-4.1.1), so add the value to `env.yml` and replace the values of `region, userPoolId`, like this:
+The authorizer needs to khow the `iss` of the [token](https://tools.ietf.org/html/rfc7519#section-4.1.1), so add the value to `.env.yml` replacing the values of `region, userPoolId`, like this:
 ```bash
 develop:
   AWS_ISS: https://cognito-idp.{region}.amazonaws.com/{userPoolId}
 ```
-**If a function needs to be secured using jwt authorizer**, remember to add it inside the function template in `serverless.yml` file, eg like this:
+**If a function needs to be secured using aws jwt authorizer**, remember to add it inside the function template in `serverless.yml` file, eg like this:
 ```yml
   get-users-orgs:
     name: test-api-get-users-orgs
@@ -216,7 +224,10 @@ And that's it, API Gateway will run the [authorizer before the lambda execution]
 
 Samples of the `response` **using lambda-proxy integration**, [more info of integrations](https://serverless.com/framework/docs/providers/aws/events/apigateway).
 ```javascript
-const { response } = require('path/to/helpers')
+const {
+  response
+} = require('path/to/helpers')
+
 response(201)
 // {"statusCode": 201, "body": "{\"data\":null}","headers": {}}
 
@@ -240,7 +251,6 @@ response()
 
 ```javascript
 module.exports.handler = (event, context, callback) => {
-
     // needed for response scope
     global.cb = callback
 ```
@@ -259,7 +269,7 @@ Note: When the body is a JSON-Document, you must parse it yourself
     "pathParameters":  {},
     "stageVariables": {},
     "requestContext": {},
-    "body": "A JSON STRING OF THE REQUEST PAYLOAD.",
+    "body": "---------------A JSON STRING OF THE REQUEST PAYLOAD.-------------------",
     "isBase64Encoded": "A boolean flag to indicate if the applicable request payload is Base64-encode"
 }
 ```
@@ -281,7 +291,11 @@ module.exports.handler = (event, context, callback) => {
 After adding the code bellow, just import the helper lib built-in and that's it... ^_^
 
 ```javascript
-const { validate, resolver, response } = require('../../helpers')
+const {
+  validate,
+  resolver,
+  response
+} = require('../../helpers')
 
 module.exports.handler = (event, context, callback) => {
 
@@ -313,11 +327,12 @@ module.exports.handler = (event, context, callback) => {
 
 ## Development
 
-Install dependencies:
+Install dependencies, Run test:
 
 ``` bash
 npm install
+npm run test
 ```
 
 ## License
-This boilerplate is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT) © [Frangeris Peguero](http://github.com/frangeris)
+This boilerplate is open-sourced software licensed with **<3** under the [MIT license](http://opensource.org/licenses/MIT) © [Frangeris Peguero](http://github.com/frangeris)

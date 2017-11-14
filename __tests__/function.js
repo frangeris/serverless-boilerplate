@@ -6,7 +6,7 @@ const helpers = require('yeoman-test');
 describe('serverless-boilerplate:function', () => {
   beforeEach(done => {
     helpers
-      .run(path.join(__dirname, '../generators/function'), {
+      .run(path.join(__dirname, '../generators/func'), {
         tmpir: false
       })
       .withPrompts({
